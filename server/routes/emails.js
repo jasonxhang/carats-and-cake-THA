@@ -7,7 +7,6 @@ const {
 } = require('@sendgrid/helpers');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-// sgMail.setApiKey('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');
 // console.log('process.env', process.env);
 // console.log('process.env.SENDGRID_API_KEY2:', process.env.SENDGRID_API_KEY2);
 
