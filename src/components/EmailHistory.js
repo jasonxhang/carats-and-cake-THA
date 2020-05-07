@@ -2,31 +2,33 @@ import React, {useState, useEffect} from 'react';
 import {withRouter, Link} from 'react-router-dom';
 import {Spinner} from 'react-bootstrap';
 import NotFound from './NotFound';
+import {connect} from 'react-redux';
+
 import axios from 'axios';
 
-const EmailHistory = (props) => {
-    const [transactions, setTransactions] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isError, setIsError] = useState(false);
+const EmailHistory = ({emailHistory}) => {
+    // const [emailHistory, setEmailHistory] = useState([]);
+    // const [isLoading, setIsLoading] = useState(true);
+    // const [isError, setIsError] = useState(false);
 
-    const fetchTransactions = async () => {
-        setIsError(false);
-        setIsLoading(true);
-        try {
-            const {data: transactionsData} = await axios.get('/api/email/all');
-            setTransactions(transactionsData);
-        } catch (e) {
-            console.error(e);
-            setTransactions([]);
-            setIsError(true);
-        }
-        setIsLoading(false);
-    };
+    // const fetchEmailHistory = async () => {
+    //     setIsError(false);
+    //     setIsLoading(true);
+    //     try {
+    //         const {data: emailHistoryData} = await axios.get('/api/email/emailHistory');
+    //         setEmailHistory(emailHistoryData);
+    //     } catch (e) {
+    //         console.error(e);
+    //         setEmailHistory([]);
+    //         setIsError(true);
+    //     }
+    //     setIsLoading(false);
+    // };
 
-    useEffect(() => {
-        const getTransactions = !transactions.length;
-        getTransactions && fetchTransactions();
-    });
+    // useEffect(() => {
+    //     const shouldGetEmails = !emailHistory.length;
+    //     shouldGetEmails && fetchEmailHistory();
+    // }, []);
 
     const renderLoading = () => {
         return (
@@ -37,63 +39,54 @@ const EmailHistory = (props) => {
         );
     };
 
-    const renderTransactionTable = () => {
-        return transactions.map((t) => {
+    const renderEmailHistoryTable = () => {
+        return emailHistory.map((email) => {
             return (
-                <div className="tr" key={t.id}>
-                    <div className="td">
-                        <Link to={`/stock/${t.ticker}`}>{t.ticker}</Link>
-                    </div>
-                    <div className="td">{t.name}</div>
-                    <div className="td">{t.purchaseType}</div>
-                    <div className="td">{t.quantity}</div>
-                    <div className="td">{t.price}</div>
-                    <div className="td">
-                        {t.purchaseType === 'sell' ? '+' : '-'}
-                        {t.netVal}
-                    </div>
-                    <div className="td">{t.notes}</div>
-                    <div className="td">
-                        {/* {moment(t.createdAt).format('MMMM Do YYYY, h:mm:ss a')} */}
-                    </div>
+                <div className="tr" key={email._id}>
+                    <div className="td">{email.recipient}</div>
+                    <div className="td">{email.subjectLine}</div>
+                    <div className="td">{email.emailBody}</div>
+                    <div className="td">{email.timeSent}</div>
                 </div>
             );
         });
     };
 
-    const renderTransactionData = () => {
-        return transactions.length ? (
+    const renderEmailHistoryData = () => {
+        return emailHistory.length ? (
             <div className="page-container">
                 <div id="table-view">
                     <div className="table">
                         <div className="thead">
                             <div className="tr">
-                                <div className="td">Ticker</div>
-                                <div className="td">Company Name</div>
-                                <div className="td">Transaction Type</div>
-                                <div className="td">Quantity</div>
-                                <div className="td">Price at transaction</div>
-                                <div className="td">Net Cost/Gain</div>
-                                <div className="td">Notes</div>
-                                <div className="td">Transaction Date </div>
+                                <div className="td">Recipient</div>
+                                <div className="td">Subject Line</div>
+                                <div className="td">Email Body</div>
+                                <div className="td">Time Sent</div>
                             </div>
                         </div>
-                        <div className="tbody">{renderTransactionTable()}</div>
+                        <div className="tbody">{renderEmailHistoryTable()}</div>
                     </div>
                 </div>
             </div>
         ) : (
-            'No transaction data available.'
+            'No email history data available. Go send some emails!'
         );
     };
 
     return (
         <div>
-            {isError && <NotFound />}
+            {/* {isError && <NotFound />} */}
 
-            {isLoading ? renderLoading() : renderTransactionData()}
+            {!emailHistory.length ? renderLoading() : renderEmailHistoryData()}
         </div>
     );
 };
 
-export default withRouter(EmailHistory);
+const mapState = (state) => {
+    return {
+        emailHistory: state.email.emails,
+    };
+};
+
+export default withRouter(connect(mapState, null)(EmailHistory));

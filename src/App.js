@@ -37,7 +37,7 @@ class App extends Component {
         return (
             <div className="App container">
                 <TopNav
-                    balance={this.props.balance}
+                    emailsSent={this.props.emailsSent}
                     handleLogout={this.handleLogout}
                     isLoggedIn={this.props.isLoggedIn}
                     symbols={this.state.symbols}
@@ -51,6 +51,7 @@ class App extends Component {
 const mapState = (state) => {
     return {
         isLoggedIn: !!state.user._id,
+        emailsSent: state.user.emailsSent,
     };
 };
 

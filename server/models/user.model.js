@@ -22,9 +22,12 @@ const userSchema = new Schema({
         default: Date.now,
         required: true,
     },
+    emailsSent: {
+        type: 'Number',
+        required: 'false',
+        default: 0,
+    },
 });
-
-// userSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model('User', userSchema);
 

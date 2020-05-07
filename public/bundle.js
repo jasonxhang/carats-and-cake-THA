@@ -63474,7 +63474,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "App container"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components__WEBPACK_IMPORTED_MODULE_5__["TopNav"], {
-      balance: this.props.balance,
+      emailsSent: this.props.emailsSent,
       handleLogout: this.handleLogout,
       isLoggedIn: this.props.isLoggedIn,
       symbols: this.state.symbols
@@ -63485,7 +63485,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 const mapState = state => {
   return {
-    isLoggedIn: !!state.user._id
+    isLoggedIn: !!state.user._id,
+    emailsSent: state.user.emailsSent
   };
 };
 
@@ -63524,42 +63525,39 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
 /* harmony import */ var _NotFound__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NotFound */ "./src/components/NotFound.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
 
 
 
 
 
 
-const EmailHistory = props => {
-  const [transactions, setTransactions] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
-  const [isLoading, setIsLoading] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true);
-  const [isError, setIsError] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
 
-  const fetchTransactions = async () => {
-    setIsError(false);
-    setIsLoading(true);
-
-    try {
-      const {
-        data: transactionsData
-      } = await axios__WEBPACK_IMPORTED_MODULE_4___default.a.get('/api/email/all');
-      setTransactions(transactionsData);
-    } catch (e) {
-      console.error(e);
-      setTransactions([]);
-      setIsError(true);
-    }
-
-    setIsLoading(false);
-  };
-
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    const getTransactions = !transactions.length;
-    getTransactions && fetchTransactions();
-  });
-
+const EmailHistory = ({
+  emailHistory
+}) => {
+  // const [emailHistory, setEmailHistory] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isError, setIsError] = useState(false);
+  // const fetchEmailHistory = async () => {
+  //     setIsError(false);
+  //     setIsLoading(true);
+  //     try {
+  //         const {data: emailHistoryData} = await axios.get('/api/email/emailHistory');
+  //         setEmailHistory(emailHistoryData);
+  //     } catch (e) {
+  //         console.error(e);
+  //         setEmailHistory([]);
+  //         setIsError(true);
+  //     }
+  //     setIsLoading(false);
+  // };
+  // useEffect(() => {
+  //     const shouldGetEmails = !emailHistory.length;
+  //     shouldGetEmails && fetchEmailHistory();
+  // }, []);
   const renderLoading = () => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "loading"
@@ -63569,35 +63567,25 @@ const EmailHistory = props => {
     }));
   };
 
-  const renderTransactionTable = () => {
-    return transactions.map(t => {
+  const renderEmailHistoryTable = () => {
+    return emailHistory.map(email => {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "tr",
-        key: t.id
+        key: email._id
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "td"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Link"], {
-        to: `/stock/${t.ticker}`
-      }, t.ticker)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, email.recipient), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "td"
-      }, t.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, email.subjectLine), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "td"
-      }, t.purchaseType), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, email.emailBody), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "td"
-      }, t.quantity), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "td"
-      }, t.price), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "td"
-      }, t.purchaseType === 'sell' ? '+' : '-', t.netVal), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "td"
-      }, t.notes), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "td"
-      }));
+      }, email.timeSent));
     });
   };
 
-  const renderTransactionData = () => {
-    return transactions.length ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+  const renderEmailHistoryData = () => {
+    return emailHistory.length ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "page-container"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "table-view"
@@ -63609,29 +63597,27 @@ const EmailHistory = props => {
       className: "tr"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "td"
-    }, "Ticker"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Recipient"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "td"
-    }, "Company Name"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Subject Line"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "td"
-    }, "Transaction Type"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Email Body"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "td"
-    }, "Quantity"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "td"
-    }, "Price at transaction"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "td"
-    }, "Net Cost/Gain"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "td"
-    }, "Notes"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "td"
-    }, "Transaction Date "))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Time Sent"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "tbody"
-    }, renderTransactionTable())))) : 'No transaction data available.';
+    }, renderEmailHistoryTable())))) : 'No email history data available. Go send some emails!';
   };
 
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, isError && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NotFound__WEBPACK_IMPORTED_MODULE_3__["default"], null), isLoading ? renderLoading() : renderTransactionData());
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, !emailHistory.length ? renderLoading() : renderEmailHistoryData());
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(EmailHistory));
+const mapState = state => {
+  return {
+    emailHistory: state.email.emails
+  };
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["connect"])(mapState, null)(EmailHistory)));
 
 /***/ }),
 
@@ -63810,7 +63796,8 @@ __webpack_require__.r(__webpack_exports__);
 
 const TopNav = ({
   isLoggedIn,
-  handleLogout
+  handleLogout,
+  emailsSent
 }) => {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "App container"
@@ -63839,7 +63826,9 @@ const TopNav = ({
     className: "nav-link",
     to: "/",
     onClick: handleLogout
-  }, "Logout")) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["NavLink"], {
+  }, "Logout"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Brand, {
+    id: "balance"
+  }, "Total Emails Sent: ", emailsSent)) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["NavLink"], {
     className: "nav-link",
     to: "/login"
   }, "Login"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["NavLink"], {
@@ -63884,126 +63873,60 @@ const NewEmail = ({
   reloadInitialData,
   portfolio
 }) => {
-  const [purchaseType, setPurchase] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [quantity, setQuantity] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [notes, setNotes] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [netVal, setNetVal] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
-  const [ownedShares, setOwnedShares] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
+  const [recipient, setRecipient] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
+  const [subjectLine, setSubjectLine] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
+  const [emailBody, setEmailBody] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
+  const [emailsSent, setEmailsSentl] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
 
-  const calcOwnedShares = () => {
-    const num = portfolio.reduce((accum, curr) => {
-      if (curr.ticker === ticker) {
-        accum = curr.numShares;
-      }
-
-      if (curr.numShares === 0) accum = 0;
-      return accum;
-    }, 0);
-    setOwnedShares(num);
-  };
-
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    calcOwnedShares();
-  });
-
-  const handleOrder = async () => {
+  const handleSubmit = async () => {
     try {
-      const order = {
-        purchaseType,
-        quantity,
-        price,
-        ticker,
-        name,
-        notes,
-        netVal
+      const emailPayload = {
+        recipient,
+        subjectLine,
+        emailBody
       };
-      await axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('/api/stocks/order', order);
-      setPurchase('');
-      setQuantity('');
-      setNotes('');
-      setNetVal(0);
+      const res = await axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('/api/email/new', emailPayload);
+      setRecipient('');
+      setSubjectLine('');
+      setEmailBody('');
       reloadInitialData();
-      calcOwnedShares();
+      console.log('res:', res);
     } catch (e) {
-      alert(e.response.data);
-      console.error(e);
+      console.log(e);
+      alert('Something went wrong: ', e.response.data);
     }
   };
-
-  const onChange = e => {
-    //only accept whole integers client side
-    const re = /^[0-9\b]+$/; // if value is not blank, then test the regex
-
-    if (e.target.value === '' || re.test(e.target.value)) {
-      setQuantity(e.target.value);
-      setNetVal((e.target.value * price).toFixed(2));
-    }
-  }; //if trying to sell more shares than owned or buy with insufficient funds, render error. otherwise display dynamic confirmation
-
 
   const renderConfirmButton = () => {
-    let message, variant, str;
-
-    if (purchaseType === 'buy') {
-      message = 'Confirm purchase';
-      variant = 'success';
-      str = 'cost';
-    } else if (purchaseType === 'sell') {
-      message = 'Confirm sale';
-      variant = 'danger';
-      str = 'gain';
-    } else {
-      message = 'Please choose a transaction type';
-      variant = 'info';
-      str = '';
-    }
-
-    if (purchaseType === 'buy' && netVal > balance) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Total cost: ", formatter.format(netVal)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Alert"], {
-        variant: "warning"
-      }, "Insufficient funds!"));
-    } else if (purchaseType === 'sell' && quantity > ownedShares) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Total cost: ", formatter.format(netVal)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Alert"], {
-        variant: "warning"
-      }, "Insufficient shares to sell!"));
-    } else {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Total ", str, ": ", formatter.format(netVal)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
-        size: "lg",
-        disabled: purchaseType === '' || quantity === '',
-        onClick: handleOrder,
-        variant: variant
-      }, message));
-    }
-  };
-
-  const renderTransactionButtons = () => {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
       size: "lg",
-      onClick: () => setPurchase('buy'),
-      variant: "light"
-    }, "Buy"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
-      size: "lg",
-      onClick: () => setPurchase('sell'),
-      variant: "light"
-    }, "Sell"));
+      disabled: recipient === '' || subjectLine === '' || emailBody === '',
+      onClick: handleSubmit,
+      variant: "success"
+    }, "Send email!"));
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "stockpage-container"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"], {
     className: "transaction-container"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
-    controlId: "shares"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "Shares currently owned: ", ownedShares), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Number of shares to transact:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
-    value: quantity,
-    type: "shares",
-    onChange: onChange,
-    placeholder: "0"
-  })), renderTransactionButtons(), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
-    controlId: "transaction-notes"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Transaction notes (optional)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
-    value: notes,
-    onChange: event => setNotes(event.target.value),
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "Send an email!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
+    controlId: "recipient"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Recipient:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
+    value: recipient,
+    onChange: event => setRecipient(event.target.value),
+    placeholder: "please enter an email address"
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
+    controlId: "subjectLine"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Subject line:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
+    value: subjectLine,
+    onChange: event => setSubjectLine(event.target.value),
+    placeholder: "please enter a suject line"
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
+    controlId: "emailBody"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Body:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
+    value: emailBody,
+    onChange: event => setEmailBody(event.target.value),
     as: "textarea",
     rows: "3"
   })), renderConfirmButton()));
@@ -64013,6 +63936,7 @@ const mapDispatch = dispatch => {
   return {
     reloadInitialData() {
       dispatch(Object(_store__WEBPACK_IMPORTED_MODULE_5__["me"])());
+      dispatch(Object(_store__WEBPACK_IMPORTED_MODULE_5__["fetchEmails"])());
     }
 
   };
@@ -64860,7 +64784,7 @@ const mapState = state => {
   return {
     // Being 'logged in' for our purposes will be defined has having a state.user that has a truthy id.
     // Otherwise, state.user will be an empty object, and state.user.id will be falsey
-    isLoggedIn: !!state.user.id
+    isLoggedIn: !!state.user._id
   };
 };
 

@@ -35,7 +35,7 @@ const createApp = () => {
     app.use(compression());
 
     mongoose
-        .connect(uri, {useNewUrlParser: true, useCreateIndex: true})
+        .connect(uri, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
         .catch((error) => console.error(error));
 
     const connection = mongoose.connection;

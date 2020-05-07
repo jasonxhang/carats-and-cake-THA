@@ -1,9 +1,18 @@
 const router = require('express').Router();
 
 const sgMail = require('@sendgrid/mail');
+
+const {
+    classes: {Mail},
+} = require('@sendgrid/helpers');
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// sgMail.setApiKey('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');
+// console.log('process.env', process.env);
+// console.log('process.env.SENDGRID_API_KEY2:', process.env.SENDGRID_API_KEY2);
 
 let Email = require('../models/email.model.js');
+let User = require('../models/user.model.js');
 
 router.post('/new', async (req, res, next) => {
     try {
@@ -23,11 +32,20 @@ router.post('/new', async (req, res, next) => {
             text: emailBody,
         };
 
+        const mail = Mail.create(msg);
+        const body = mail.toJSON();
+        console.log('body', body);
+
+        console.log('msg:', msg);
         const sentSgEmail = await sgMail.send(msg);
+        console.log('sentSgEmail:', sentSgEmail);
         const savedEmail = await newEmail.save();
 
-        res.json(savedEmail);
+        await User.updateOne({_id: req.user._id}, {$inc: {emailsSent: 1}});
+
+        res.json({sentSgEmail, savedEmail});
     } catch (error) {
+        console.log('Sendgrid error:', error.response.body.errors);
         next(error);
     }
 });

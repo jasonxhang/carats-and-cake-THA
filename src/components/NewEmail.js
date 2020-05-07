@@ -3,142 +3,70 @@ import axios from 'axios';
 import {withRouter} from 'react-router-dom';
 import {Form, Button, Alert} from 'react-bootstrap';
 import {connect} from 'react-redux';
-import {me} from '../store';
+import {me, fetchEmails} from '../store';
 
 const NewEmail = ({price, ticker, name, balance, reloadInitialData, portfolio}) => {
-    const [purchaseType, setPurchase] = useState('');
-    const [quantity, setQuantity] = useState('');
-    const [notes, setNotes] = useState('');
-    const [netVal, setNetVal] = useState(0);
-    const [ownedShares, setOwnedShares] = useState(0);
+    const [recipient, setRecipient] = useState('');
+    const [subjectLine, setSubjectLine] = useState('');
+    const [emailBody, setEmailBody] = useState('');
+    const [emailsSent, setEmailsSentl] = useState(0);
 
-    const calcOwnedShares = () => {
-        const num = portfolio.reduce((accum, curr) => {
-            if (curr.ticker === ticker) {
-                accum = curr.numShares;
-            }
-            if (curr.numShares === 0) accum = 0;
-            return accum;
-        }, 0);
-        setOwnedShares(num);
-    };
-
-    useEffect(() => {
-        calcOwnedShares();
-    });
-
-    const handleOrder = async () => {
+    const handleSubmit = async () => {
         try {
-            const order = {purchaseType, quantity, price, ticker, name, notes, netVal};
-            await axios.post('/api/stocks/order', order);
-            setPurchase('');
-            setQuantity('');
-            setNotes('');
-            setNetVal(0);
+            const emailPayload = {recipient, subjectLine, emailBody};
+            const res = await axios.post('/api/email/new', emailPayload);
+            setRecipient('');
+            setSubjectLine('');
+            setEmailBody('');
             reloadInitialData();
-            calcOwnedShares();
+            console.log('res:', res);
         } catch (e) {
-            alert(e.response.data);
-            console.error(e);
+            console.log(e);
+            alert('Something went wrong: ', e.response.data);
         }
     };
 
-    const onChange = (e) => {
-        //only accept whole integers client side
-        const re = /^[0-9\b]+$/;
-        // if value is not blank, then test the regex
-
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setQuantity(e.target.value);
-            setNetVal((e.target.value * price).toFixed(2));
-        }
-    };
-
-    //if trying to sell more shares than owned or buy with insufficient funds, render error. otherwise display dynamic confirmation
     const renderConfirmButton = () => {
-        let message, variant, str;
-
-        if (purchaseType === 'buy') {
-            message = 'Confirm purchase';
-            variant = 'success';
-            str = 'cost';
-        } else if (purchaseType === 'sell') {
-            message = 'Confirm sale';
-            variant = 'danger';
-            str = 'gain';
-        } else {
-            message = 'Please choose a transaction type';
-            variant = 'info';
-            str = '';
-        }
-
-        if (purchaseType === 'buy' && netVal > balance) {
-            return (
-                <Fragment>
-                    <p>Total cost: {formatter.format(netVal)}</p>
-                    <Alert variant="warning">Insufficient funds!</Alert>
-                </Fragment>
-            );
-        } else if (purchaseType === 'sell' && quantity > ownedShares) {
-            return (
-                <Fragment>
-                    <p>Total cost: {formatter.format(netVal)}</p>
-                    <Alert variant="warning">Insufficient shares to sell!</Alert>
-                </Fragment>
-            );
-        } else {
-            return (
-                <div>
-                    <p>
-                        Total {str}: {formatter.format(netVal)}
-                    </p>
-                    <Button
-                        size="lg"
-                        disabled={purchaseType === '' || quantity === ''}
-                        onClick={handleOrder}
-                        variant={variant}
-                    >
-                        {message}
-                    </Button>
-                </div>
-            );
-        }
-    };
-
-    const renderTransactionButtons = () => {
         return (
-            <Fragment>
-                <Button size="lg" onClick={() => setPurchase('buy')} variant="light">
-                    Buy
+            <div>
+                <Button
+                    size="lg"
+                    disabled={recipient === '' || subjectLine === '' || emailBody === ''}
+                    onClick={handleSubmit}
+                    variant="success"
+                >
+                    Send email!
                 </Button>
-                <Button size="lg" onClick={() => setPurchase('sell')} variant="light">
-                    Sell
-                </Button>
-            </Fragment>
+            </div>
         );
     };
 
     return (
         <div className="stockpage-container">
             <Form className="transaction-container">
-                <Form.Group controlId="shares">
-                    <div>Shares currently owned: {ownedShares}</div>
-                    <Form.Label>Number of shares to transact:</Form.Label>
+                <div>Send an email!</div>
+                <Form.Group controlId="recipient">
+                    <Form.Label>Recipient:</Form.Label>
                     <Form.Control
-                        value={quantity}
-                        type="shares"
-                        onChange={onChange}
-                        placeholder="0"
+                        value={recipient}
+                        onChange={(event) => setRecipient(event.target.value)}
+                        placeholder="please enter an email address"
+                    />
+                </Form.Group>
+                <Form.Group controlId="subjectLine">
+                    <Form.Label>Subject line:</Form.Label>
+                    <Form.Control
+                        value={subjectLine}
+                        onChange={(event) => setSubjectLine(event.target.value)}
+                        placeholder="please enter a suject line"
                     />
                 </Form.Group>
 
-                {renderTransactionButtons()}
-
-                <Form.Group controlId="transaction-notes">
-                    <Form.Label>Transaction notes (optional)</Form.Label>
+                <Form.Group controlId="emailBody">
+                    <Form.Label>Body:</Form.Label>
                     <Form.Control
-                        value={notes}
-                        onChange={(event) => setNotes(event.target.value)}
+                        value={emailBody}
+                        onChange={(event) => setEmailBody(event.target.value)}
                         as="textarea"
                         rows="3"
                     />
@@ -153,6 +81,7 @@ const mapDispatch = (dispatch) => {
     return {
         reloadInitialData() {
             dispatch(me());
+            dispatch(fetchEmails());
         },
     };
 };
