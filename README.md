@@ -6,7 +6,7 @@ This app is a simple email delivery service powered by SendGrid. Account creatio
 
 ### How to run
 
-1. create a .env file and add your MongoDB URI and SendGrid API key
+1. create a .env file and add an ATLAS_URI and SENDGRID_API_KEY
 2. run `npm i`
 3. run `npm run start-dev` to boot the backend and frontend in development mode
 4. Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
