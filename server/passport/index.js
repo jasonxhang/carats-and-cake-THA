@@ -64,7 +64,6 @@ passport.use(
                     }
                 })
                 .catch((err) => {
-                    console.log('58', err);
                     return done(null, false, {errors: err});
                 });
         }

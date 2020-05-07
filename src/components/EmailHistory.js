@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 
 const EmailHistory = ({emailHistory}) => {
+    //Uncomment if we want email history to be handled directly in the component as opposed to redux
     // const [emailHistory, setEmailHistory] = useState([]);
     // const [isLoading, setIsLoading] = useState(true);
     // const [isError, setIsError] = useState(false);
@@ -74,13 +75,7 @@ const EmailHistory = ({emailHistory}) => {
         );
     };
 
-    return (
-        <div>
-            {/* {isError && <NotFound />} */}
-
-            {!emailHistory.length ? renderLoading() : renderEmailHistoryData()}
-        </div>
-    );
+    return <div>{!emailHistory.length ? renderLoading() : renderEmailHistoryData()}</div>;
 };
 
 const mapState = (state) => {

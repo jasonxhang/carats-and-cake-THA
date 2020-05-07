@@ -16,8 +16,6 @@ class App extends Component {
     }
 
     async componentDidMount() {
-        console.log('STATE', this.state);
-        console.log('PROPS', this.props);
         console.log('loading initial data');
         await this.props.loadInitialData();
         console.log('initial data loaded', this.props);

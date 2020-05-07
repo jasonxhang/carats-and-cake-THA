@@ -4,7 +4,6 @@ const morgan = require('morgan');
 const compression = require('compression');
 const mongoose = require('mongoose');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 
 const session = require('express-session');
 const passport = require('./passport');
@@ -24,9 +23,6 @@ const createApp = () => {
     // logging middleware
     app.use(morgan('dev'));
 
-    // // cors middleware
-    // app.use(cors());
-
     // body parsing middleware
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
@@ -44,7 +40,6 @@ const createApp = () => {
         console.log('MongoDB database connection established successfully...');
     });
 
-    // app.use(cookieParser(process.env.SESSION_SECRET || 'shh very secret'));
     // session middleware with passport
     app.use(
         session({
@@ -52,7 +47,6 @@ const createApp = () => {
             store: new MongoStore({mongooseConnection: connection}),
             resave: false,
             saveUninitialized: true,
-            // cookie: {secure: false},
         })
     );
 

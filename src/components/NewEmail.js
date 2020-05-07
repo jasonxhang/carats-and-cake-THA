@@ -1,15 +1,15 @@
 import React, {Fragment, useState, useEffect} from 'react';
 import axios from 'axios';
 import {withRouter} from 'react-router-dom';
-import {Form, Button, Alert} from 'react-bootstrap';
+import {Form, Button, Alert, Fade} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {me, fetchEmails} from '../store';
 
-const NewEmail = ({price, ticker, name, balance, reloadInitialData, portfolio}) => {
+const NewEmail = ({reloadInitialData}) => {
     const [recipient, setRecipient] = useState('');
     const [subjectLine, setSubjectLine] = useState('');
     const [emailBody, setEmailBody] = useState('');
-    const [emailsSent, setEmailsSentl] = useState(0);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const handleSubmit = async () => {
         try {
@@ -19,11 +19,20 @@ const NewEmail = ({price, ticker, name, balance, reloadInitialData, portfolio}) 
             setSubjectLine('');
             setEmailBody('');
             reloadInitialData();
-            console.log('res:', res);
+            setShowSuccess(true);
         } catch (e) {
-            console.log(e);
-            alert('Something went wrong: ', e.response.data);
+            console.error('error', e);
+            alert('Something went wrong, please contact the site administrator.');
         }
+    };
+
+    const startedNotComplete = () => {
+        let started = recipient.length || subjectLine.length || emailBody.length;
+        let complete = recipient !== '' && subjectLine !== '' && emailBody !== '';
+
+        if (started && !complete) return true;
+
+        return false;
     };
 
     const renderConfirmButton = () => {
@@ -41,38 +50,56 @@ const NewEmail = ({price, ticker, name, balance, reloadInitialData, portfolio}) 
         );
     };
 
-    return (
-        <div className="stockpage-container">
-            <Form className="transaction-container">
-                <div>Send an email!</div>
-                <Form.Group controlId="recipient">
-                    <Form.Label>Recipient:</Form.Label>
-                    <Form.Control
-                        value={recipient}
-                        onChange={(event) => setRecipient(event.target.value)}
-                        placeholder="please enter an email address"
-                    />
-                </Form.Group>
-                <Form.Group controlId="subjectLine">
-                    <Form.Label>Subject line:</Form.Label>
-                    <Form.Control
-                        value={subjectLine}
-                        onChange={(event) => setSubjectLine(event.target.value)}
-                        placeholder="please enter a suject line"
-                    />
-                </Form.Group>
+    function renderSuccessAlert() {
+        return (
+            <div className="success-alert">
+                <Alert show={showSuccess} variant="primary">
+                    <Alert.Heading>Email successfully sent!</Alert.Heading>
+                    <hr />
+                    <div className="d-flex justify-content-end">
+                        <Button onClick={() => setShowSuccess(false)}>Close</Button>
+                    </div>
+                </Alert>
+            </div>
+        );
+    }
 
-                <Form.Group controlId="emailBody">
-                    <Form.Label>Body:</Form.Label>
-                    <Form.Control
-                        value={emailBody}
-                        onChange={(event) => setEmailBody(event.target.value)}
-                        as="textarea"
-                        rows="3"
-                    />
-                </Form.Group>
-                {renderConfirmButton()}
-            </Form>
+    return (
+        <div className="page-container">
+            <div className="newEmail-container">
+                <Form>
+                    <h3>Compose an email</h3>
+                    <Form.Group controlId="recipient">
+                        <Form.Label>Recipient:</Form.Label>
+                        <Form.Control
+                            value={recipient}
+                            onChange={(event) => setRecipient(event.target.value)}
+                            placeholder="please enter an email address"
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="subjectLine">
+                        <Form.Label>Subject line:</Form.Label>
+                        <Form.Control
+                            value={subjectLine}
+                            onChange={(event) => setSubjectLine(event.target.value)}
+                            placeholder="please enter a subject line"
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="emailBody">
+                        <Form.Label>Body:</Form.Label>
+                        <Form.Control
+                            value={emailBody}
+                            onChange={(event) => setEmailBody(event.target.value)}
+                            as="textarea"
+                            rows="3"
+                        />
+                    </Form.Group>
+                    {renderConfirmButton()}
+                    {startedNotComplete() && <div>All fields required</div>}
+                </Form>
+                {showSuccess && renderSuccessAlert()}
+            </div>
         </div>
     );
 };

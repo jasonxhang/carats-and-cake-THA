@@ -25,22 +25,25 @@ class Home extends Component {
         const {user} = this.props;
         return (
             <div className="page-container">
-                {user.email ? (
-                    <Jumbotron>
-                        <h1>Hello, {user.signUpName}!</h1>
-                        <p>
-                            Welcome to Email Sender. Feel free to send as many emails as you wish.
-                        </p>
-                    </Jumbotron>
-                ) : (
-                    <Jumbotron>
-                        <h1>Hello, Guest!</h1>
-                        <p>
-                            Welcome to Email Sender. Please register an account in order to send
-                            emails.
-                        </p>
-                    </Jumbotron>
-                )}
+                <div className="welcome-container">
+                    {user.email ? (
+                        <Jumbotron>
+                            <h1>Hello, {user.signUpName}!</h1>
+                            <p>
+                                Welcome to Email Sender. Feel free to send as many emails as you
+                                wish.
+                            </p>
+                        </Jumbotron>
+                    ) : (
+                        <Jumbotron>
+                            <h1>Hello, Guest!</h1>
+                            <p>
+                                Welcome to Email Sender. Please register an account in order to send
+                                emails.
+                            </p>
+                        </Jumbotron>
+                    )}
+                </div>
             </div>
         );
     }

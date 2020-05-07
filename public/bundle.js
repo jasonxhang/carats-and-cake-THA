@@ -63458,8 +63458,6 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   }
 
   async componentDidMount() {
-    console.log('STATE', this.state);
-    console.log('PROPS', this.props);
     console.log('loading initial data');
     await this.props.loadInitialData();
     console.log('initial data loaded', this.props);
@@ -63538,6 +63536,7 @@ __webpack_require__.r(__webpack_exports__);
 const EmailHistory = ({
   emailHistory
 }) => {
+  //Uncomment if we want email history to be handled directly in the component as opposed to redux
   // const [emailHistory, setEmailHistory] = useState([]);
   // const [isLoading, setIsLoading] = useState(true);
   // const [isError, setIsError] = useState(false);
@@ -63659,7 +63658,9 @@ class Home extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     } = this.props;
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "page-container"
-    }, user.email ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Jumbotron"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Hello, ", user.signUpName, "!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Welcome to Email Sender. Feel free to send as many emails as you wish.")) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Jumbotron"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Hello, Guest!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Welcome to Email Sender. Please register an account in order to send emails.")));
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "welcome-container"
+    }, user.email ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Jumbotron"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Hello, ", user.signUpName, "!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Welcome to Email Sender. Feel free to send as many emails as you wish.")) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Jumbotron"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Hello, Guest!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Welcome to Email Sender. Please register an account in order to send emails."))));
   }
 
 }
@@ -63826,15 +63827,17 @@ const TopNav = ({
     className: "nav-link",
     to: "/",
     onClick: handleLogout
-  }, "Logout"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Brand, {
-    id: "balance"
-  }, "Total Emails Sent: ", emailsSent)) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["NavLink"], {
+  }, "Logout")) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["NavLink"], {
     className: "nav-link",
     to: "/login"
   }, "Login"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["NavLink"], {
     className: "nav-link",
     to: "/signup"
-  }, "Signup"))))));
+  }, "Signup"))), isLoggedIn && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: "emailCounter"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Brand, {
+    className: "nav navbar-nav navbar-right"
+  }, "Total Emails Sent: ", emailsSent)))));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(TopNav));
@@ -63866,17 +63869,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const NewEmail = ({
-  price,
-  ticker,
-  name,
-  balance,
-  reloadInitialData,
-  portfolio
+  reloadInitialData
 }) => {
   const [recipient, setRecipient] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
   const [subjectLine, setSubjectLine] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
   const [emailBody, setEmailBody] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [emailsSent, setEmailsSentl] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
+  const [showSuccess, setShowSuccess] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
 
   const handleSubmit = async () => {
     try {
@@ -63890,11 +63888,18 @@ const NewEmail = ({
       setSubjectLine('');
       setEmailBody('');
       reloadInitialData();
-      console.log('res:', res);
+      setShowSuccess(true);
     } catch (e) {
-      console.log(e);
-      alert('Something went wrong: ', e.response.data);
+      console.error('error', e);
+      alert('Something went wrong, please contact the site administrator.');
     }
+  };
+
+  const startedNotComplete = () => {
+    let started = recipient.length || subjectLine.length || emailBody.length;
+    let complete = recipient !== '' && subjectLine !== '' && emailBody !== '';
+    if (started && !complete) return true;
+    return false;
   };
 
   const renderConfirmButton = () => {
@@ -63906,11 +63911,24 @@ const NewEmail = ({
     }, "Send email!"));
   };
 
+  function renderSuccessAlert() {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "success-alert"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Alert"], {
+      show: showSuccess,
+      variant: "primary"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Alert"].Heading, null, "Email successfully sent!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "d-flex justify-content-end"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
+      onClick: () => setShowSuccess(false)
+    }, "Close"))));
+  }
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    className: "stockpage-container"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"], {
-    className: "transaction-container"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "Send an email!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
+    className: "page-container"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "newEmail-container"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Compose an email"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
     controlId: "recipient"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Recipient:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
     value: recipient,
@@ -63921,7 +63939,7 @@ const NewEmail = ({
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Subject line:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
     value: subjectLine,
     onChange: event => setSubjectLine(event.target.value),
-    placeholder: "please enter a suject line"
+    placeholder: "please enter a subject line"
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
     controlId: "emailBody"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Body:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
@@ -63929,7 +63947,7 @@ const NewEmail = ({
     onChange: event => setEmailBody(event.target.value),
     as: "textarea",
     rows: "3"
-  })), renderConfirmButton()));
+  })), renderConfirmButton(), startedNotComplete() && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "All fields required")), showSuccess && renderSuccessAlert()));
 };
 
 const mapDispatch = dispatch => {
@@ -63961,174 +63979,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = (() => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
   className: "NotFound"
 }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Sorry, page not found!")));
-
-/***/ }),
-
-/***/ "./src/components/Portfolio.js":
-/*!*************************************!*\
-  !*** ./src/components/Portfolio.js ***!
-  \*************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
-/* harmony import */ var _PortfolioItem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./PortfolioItem */ "./src/components/PortfolioItem.js");
-/* harmony import */ var _NotFound__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./NotFound */ "./src/components/NotFound.js");
-
-
-
-
-
-
-
-
-const Portfolio = props => {
-  const [portfolio, setPortfolio] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
-  const [isLoading, setIsLoading] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true);
-  const [isError, setIsError] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
-  const [portfolioValue, setPortfolioValue] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-
-  const fetchPortfolio = async () => {
-    setIsError(false);
-    setIsLoading(true);
-
-    try {
-      const {
-        data: portfolioData
-      } = await axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('/api/portfolio');
-      setPortfolio(portfolioData);
-      const total = portfolioData.reduce((accum, curr) => {
-        let netVal = curr.latestPrice * curr.numShares;
-        accum += netVal;
-        return accum;
-      }, 0);
-      setPortfolioValue(total.toFixed(2));
-    } catch (e) {
-      console.error(e);
-      setPortfolio([]);
-      setIsError(true);
-    }
-
-    setIsLoading(false);
-  };
-
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    const getPortfolio = !portfolio.length;
-    getPortfolio && fetchPortfolio();
-  });
-
-  const renderLoading = () => {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "loading"
-    }, ' ', "Loading...", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_4__["Spinner"], {
-      animation: "border",
-      variant: "primary"
-    }));
-  };
-
-  const renderPortfolio = () => {
-    return portfolio.length ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "page-container"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Portfolio Value: $", portfolioValue), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "portfolio-container"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_4__["Accordion"], null, portfolio.map(item => {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_PortfolioItem__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        key: item.id,
-        stock: item,
-        eventKey: item.id
-      });
-    })))) : 'No items in your portfolio.';
-  };
-
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, isError && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NotFound__WEBPACK_IMPORTED_MODULE_6__["default"], null), isLoading ? renderLoading() : renderPortfolio());
-};
-
-const mapState = ({
-  portfolio
-}) => ({
-  portfolio: portfolio
-});
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_3__["withRouter"])(Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])(mapState)(Portfolio)));
-
-/***/ }),
-
-/***/ "./src/components/PortfolioItem.js":
-/*!*****************************************!*\
-  !*** ./src/components/PortfolioItem.js ***!
-  \*****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
-/* harmony import */ var _containers_currency__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./containers/currency */ "./src/components/containers/currency.js");
-
-
-
-
-
-const PortfolioItem = ({
-  stock,
-  eventKey
-}) => {
-  const {
-    ticker,
-    numShares,
-    companyName,
-    latestPrice,
-    daysOpenPrice
-  } = stock;
-  const [valueStyle, setValueStyle] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({});
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    const style = {
-      color: ''
-    };
-
-    if (latestPrice > daysOpenPrice) {
-      style.color = 'green';
-    } else if (latestPrice === daysOpenPrice) {
-      style.color = 'grey';
-    } else if (latestPrice < daysOpenPrice) {
-      style.color = 'red';
-    }
-
-    setValueStyle(style);
-  }, [latestPrice, daysOpenPrice]);
-
-  const renderPortfolioItem = () => {
-    return stock && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Card"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Accordion"].Toggle, {
-      as: react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Card"].Header,
-      eventKey: `${eventKey}`
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-      style: valueStyle
-    }, ticker), " - Shares Owned: ", numShares, " - Current price:", ' ', /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-      style: valueStyle
-    }, _containers_currency__WEBPACK_IMPORTED_MODULE_3__["formatter"].format(latestPrice)), " - Total value: ", _containers_currency__WEBPACK_IMPORTED_MODULE_3__["formatter"].format(latestPrice * numShares))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Accordion"].Collapse, {
-      eventKey: `${eventKey}`
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Card"].Body, {
-      className: "portfolio-item-body"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Company: ", companyName), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Shares owned: ", numShares), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Current Price: $", latestPrice), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Day's Open: $", daysOpenPrice), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Last bought:", ' '), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Link"], {
-      to: `/stock/${ticker}`
-    }, "Go to stock page")))));
-  };
-
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, renderPortfolioItem());
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(PortfolioItem));
 
 /***/ }),
 
@@ -64270,259 +64120,6 @@ const mapDispatch = {
 
 /***/ }),
 
-/***/ "./src/components/StockPage.js":
-/*!*************************************!*\
-  !*** ./src/components/StockPage.js ***!
-  \*************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
-/* harmony import */ var _containers_useFetchStock__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./containers/useFetchStock */ "./src/components/containers/useFetchStock.js");
-/* harmony import */ var _NotFound__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./NotFound */ "./src/components/NotFound.js");
-/* harmony import */ var _StockTransaction__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StockTransaction */ "./src/components/StockTransaction.js");
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-
-
-
-
-
-
-
-
-const StockPage = props => {
-  const ticker = props.match.params.ticker;
-  const {
-    isLoggedIn
-  } = props;
-  const [{
-    stockData,
-    isLoading,
-    isError
-  }] = Object(_containers_useFetchStock__WEBPACK_IMPORTED_MODULE_3__["useFetchStock"])(ticker);
-  const {
-    info,
-    logo,
-    quote,
-    stats
-  } = stockData;
-
-  const renderLoading = () => {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "loading"
-    }, ' ', "Loading...", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Spinner"], {
-      animation: "border",
-      variant: "primary"
-    }));
-  };
-
-  const renderStockInfo = () => {
-    return info && logo && quote && stats && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "stockpage-container"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "company-container"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, info.symbol), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h5", null, info.companyName), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h5", null, "Price: ", quote.latestPrice), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "stock-details"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "Opening price: ", quote.open), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "High: ", quote.high), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "Low: ", quote.low), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "Previous close: ", quote.previousClose), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "Change: ", quote.change), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "Avg total volume: ", quote.avgTotalVolume), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "P/E ratio: ", quote.peRatio), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "52 week high: ", quote.week52High), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "52 week low: ", quote.week52Low))), isLoggedIn && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_StockTransaction__WEBPACK_IMPORTED_MODULE_5__["default"], {
-      price: quote.latestPrice,
-      ticker: info.symbol,
-      name: info.companyName
-    }));
-  };
-
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, isError && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_NotFound__WEBPACK_IMPORTED_MODULE_4__["default"], null), isLoading ? renderLoading() : renderStockInfo());
-};
-
-const mapState = state => {
-  return {
-    isLoggedIn: !!state.user.id
-  };
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(Object(react_redux__WEBPACK_IMPORTED_MODULE_6__["connect"])(mapState)(StockPage)));
-
-/***/ }),
-
-/***/ "./src/components/StockTransaction.js":
-/*!********************************************!*\
-  !*** ./src/components/StockTransaction.js ***!
-  \********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store */ "./src/store/index.js");
-/* harmony import */ var _containers_currency__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./containers/currency */ "./src/components/containers/currency.js");
-
-
-
-
-
-
-
-
-const StockTransaction = ({
-  price,
-  ticker,
-  name,
-  balance,
-  reloadInitialData,
-  portfolio
-}) => {
-  const [purchaseType, setPurchase] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [quantity, setQuantity] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [notes, setNotes] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const [netVal, setNetVal] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
-  const [ownedShares, setOwnedShares] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0);
-
-  const calcOwnedShares = () => {
-    const num = portfolio.reduce((accum, curr) => {
-      if (curr.ticker === ticker) {
-        accum = curr.numShares;
-      }
-
-      if (curr.numShares === 0) accum = 0;
-      return accum;
-    }, 0);
-    setOwnedShares(num);
-  };
-
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    calcOwnedShares();
-  });
-
-  const handleOrder = async () => {
-    try {
-      const order = {
-        purchaseType,
-        quantity,
-        price,
-        ticker,
-        name,
-        notes,
-        netVal
-      };
-      await axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('/api/stocks/order', order);
-      setPurchase('');
-      setQuantity('');
-      setNotes('');
-      setNetVal(0);
-      reloadInitialData();
-      calcOwnedShares();
-    } catch (e) {
-      alert(e.response.data);
-      console.error(e);
-    }
-  };
-
-  const onChange = e => {
-    //only accept whole integers client side
-    const re = /^[0-9\b]+$/; // if value is not blank, then test the regex
-
-    if (e.target.value === '' || re.test(e.target.value)) {
-      setQuantity(e.target.value);
-      setNetVal((e.target.value * price).toFixed(2));
-    }
-  }; //if trying to sell more shares than owned or buy with insufficient funds, render error. otherwise display dynamic confirmation
-
-
-  const renderConfirmButton = () => {
-    let message, variant, str;
-
-    if (purchaseType === 'buy') {
-      message = 'Confirm purchase';
-      variant = 'success';
-      str = 'cost';
-    } else if (purchaseType === 'sell') {
-      message = 'Confirm sale';
-      variant = 'danger';
-      str = 'gain';
-    } else {
-      message = 'Please choose a transaction type';
-      variant = 'info';
-      str = '';
-    }
-
-    if (purchaseType === 'buy' && netVal > balance) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Total cost: ", _containers_currency__WEBPACK_IMPORTED_MODULE_6__["formatter"].format(netVal)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Alert"], {
-        variant: "warning"
-      }, "Insufficient funds!"));
-    } else if (purchaseType === 'sell' && quantity > ownedShares) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Total cost: ", _containers_currency__WEBPACK_IMPORTED_MODULE_6__["formatter"].format(netVal)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Alert"], {
-        variant: "warning"
-      }, "Insufficient shares to sell!"));
-    } else {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Total ", str, ": ", _containers_currency__WEBPACK_IMPORTED_MODULE_6__["formatter"].format(netVal)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
-        size: "lg",
-        disabled: purchaseType === '' || quantity === '',
-        onClick: handleOrder,
-        variant: variant
-      }, message));
-    }
-  };
-
-  const renderTransactionButtons = () => {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
-      size: "lg",
-      onClick: () => setPurchase('buy'),
-      variant: "light"
-    }, "Buy"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], {
-      size: "lg",
-      onClick: () => setPurchase('sell'),
-      variant: "light"
-    }, "Sell"));
-  };
-
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"], {
-    className: "transaction-container"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
-    controlId: "shares"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "Shares currently owned: ", ownedShares), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Number of shares to transact:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
-    value: quantity,
-    type: "shares",
-    onChange: onChange,
-    placeholder: "0"
-  })), renderTransactionButtons(), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Group, {
-    controlId: "transaction-notes"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Label, null, "Transaction notes (optional)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Form"].Control, {
-    value: notes,
-    onChange: event => setNotes(event.target.value),
-    as: "textarea",
-    rows: "3"
-  })), renderConfirmButton());
-};
-
-const mapState = state => ({
-  balance: state.user.balance,
-  portfolio: state.portfolio.portfolio
-});
-
-const mapDispatch = dispatch => {
-  return {
-    reloadInitialData() {
-      dispatch(Object(_store__WEBPACK_IMPORTED_MODULE_5__["me"])());
-    }
-
-  };
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["withRouter"])(Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["connect"])(mapState, mapDispatch)(StockTransaction)));
-
-/***/ }),
-
 /***/ "./src/components/containers/LoaderButton.js":
 /*!***************************************************!*\
   !*** ./src/components/containers/LoaderButton.js ***!
@@ -64556,70 +64153,11 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 /***/ }),
 
-/***/ "./src/components/containers/currency.js":
-/*!***********************************************!*\
-  !*** ./src/components/containers/currency.js ***!
-  \***********************************************/
-/*! exports provided: formatter */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatter", function() { return formatter; });
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2
-});
-
-/***/ }),
-
-/***/ "./src/components/containers/useFetchStock.js":
-/*!****************************************************!*\
-  !*** ./src/components/containers/useFetchStock.js ***!
-  \****************************************************/
-/*! exports provided: useFetchStock */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useFetchStock", function() { return useFetchStock; });
-// import {useState, useEffect} from 'react';
-// import axios from 'axios';
-const useFetchStock = ticker => {//   const [stockData, setStockData] = useState([])
-  //   const [isLoading, setIsLoading] = useState(false)
-  //   const [isError, setIsError] = useState(false)
-  // const [ticker, setTicker] = useState(
-  //   '',
-  // );
-  //   const getData = async () => {
-  //     setIsError(false)
-  //     setIsLoading(true)
-  //     try {
-  //       const {data} = await axios.get(`/api/stocks/${ticker}`)
-  //       setStockData(data)
-  //     } catch (e) {
-  //       setStockData([])
-  //       setIsError(true)
-  //     }
-  //     setIsLoading(false)
-  //   }
-  //   useEffect(
-  //     () => {
-  //       getData()
-  //     },
-  //     [ticker]
-  //   )
-  //   return [{stockData, isLoading, isError}]
-};
-
-/***/ }),
-
 /***/ "./src/components/index.js":
 /*!*********************************!*\
   !*** ./src/components/index.js ***!
   \*********************************/
-/*! exports provided: NotFound, Login, Signup, Home, TopNav, StockPage, StockTransaction, EmailHistory, Portfolio, PortfolioItem, NewEmail */
+/*! exports provided: NotFound, Login, Signup, Home, TopNav, EmailHistory, NewEmail */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -64639,33 +64177,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Nav__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Nav */ "./src/components/Nav.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TopNav", function() { return _Nav__WEBPACK_IMPORTED_MODULE_4__["default"]; });
 
-/* harmony import */ var _StockPage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StockPage */ "./src/components/StockPage.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "StockPage", function() { return _StockPage__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony import */ var _EmailHistory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EmailHistory */ "./src/components/EmailHistory.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EmailHistory", function() { return _EmailHistory__WEBPACK_IMPORTED_MODULE_5__["default"]; });
 
-/* harmony import */ var _StockTransaction__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./StockTransaction */ "./src/components/StockTransaction.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "StockTransaction", function() { return _StockTransaction__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-/* harmony import */ var _EmailHistory__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EmailHistory */ "./src/components/EmailHistory.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EmailHistory", function() { return _EmailHistory__WEBPACK_IMPORTED_MODULE_7__["default"]; });
-
-/* harmony import */ var _Portfolio__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Portfolio */ "./src/components/Portfolio.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Portfolio", function() { return _Portfolio__WEBPACK_IMPORTED_MODULE_8__["default"]; });
-
-/* harmony import */ var _PortfolioItem__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./PortfolioItem */ "./src/components/PortfolioItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PortfolioItem", function() { return _PortfolioItem__WEBPACK_IMPORTED_MODULE_9__["default"]; });
-
-/* harmony import */ var _NewEmail__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./NewEmail */ "./src/components/NewEmail.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "NewEmail", function() { return _NewEmail__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+/* harmony import */ var _NewEmail__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./NewEmail */ "./src/components/NewEmail.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "NewEmail", function() { return _NewEmail__WEBPACK_IMPORTED_MODULE_6__["default"]; });
 
 /**
  * `components/index.js` exists simply as a 'central export' for our components.
  * This way, we can import all of our components from the same place, rather than
  * having to figure out which file they belong to!
  */
-
-
-
-
 
 
 
@@ -64713,7 +64235,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var redux_persist_es_integration_react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! redux-persist/es/integration/react */ "./node_modules/redux-persist/es/integration/react.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./store */ "./src/store/index.js");
 
- // import './index.css';
 
 
 

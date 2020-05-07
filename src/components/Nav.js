@@ -24,9 +24,6 @@ const TopNav = ({isLoggedIn, handleLogout, emailsSent}) => {
                                 <NavLink className="nav-link" to="/" onClick={handleLogout}>
                                     Logout
                                 </NavLink>
-                                <Navbar.Brand id="balance">
-                                    Total Emails Sent: {emailsSent}
-                                </Navbar.Brand>
                             </Fragment>
                         ) : (
                             <Fragment>
@@ -39,6 +36,13 @@ const TopNav = ({isLoggedIn, handleLogout, emailsSent}) => {
                             </Fragment>
                         )}
                     </Nav>
+                    {isLoggedIn && (
+                        <div id="emailCounter">
+                            <Navbar.Brand className="nav navbar-nav navbar-right">
+                                Total Emails Sent: {emailsSent}
+                            </Navbar.Brand>
+                        </div>
+                    )}
                 </Navbar.Collapse>
             </Navbar>
         </div>
