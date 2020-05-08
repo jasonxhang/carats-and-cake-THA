@@ -75,7 +75,14 @@ const EmailHistory = ({emailHistory}) => {
         );
     };
 
-    return <div>{!emailHistory.length ? renderLoading() : renderEmailHistoryData()}</div>;
+    return (
+        <div>
+            {
+                // !emailHistory.length ? renderLoading() :
+                renderEmailHistoryData()
+            }
+        </div>
+    );
 };
 
 const mapState = (state) => {

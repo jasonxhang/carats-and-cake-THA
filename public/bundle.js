@@ -63597,7 +63597,8 @@ const EmailHistory = ({
     }, renderEmailHistoryTable())))) : 'No email history data available. Go send some emails!';
   };
 
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, !emailHistory.length ? renderLoading() : renderEmailHistoryData());
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, // !emailHistory.length ? renderLoading() :
+  renderEmailHistoryData());
 };
 
 const mapState = state => {
