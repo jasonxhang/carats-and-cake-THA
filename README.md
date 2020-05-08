@@ -2,7 +2,7 @@
 
 ### Description
 
-This app is a simple email delivery service powered by SendGrid. Account creation and login is required to send emails with authentication being handled through a combination of Passport and Express modules. Emails and user info are stored and accessed on MongoDB via Mongoose. Redux talks to the API routes and manages state, passing it along to the React frontend which is styled with React Bootstrap.
+This app is a simple email delivery service powered by SendGrid. Account creation and login is required to send emails with authentication being handled through a combination of `passport` and `express` modules. `passport` was chosen for its ability to persist sessions and handle backend authentication. Additional persisting is handled by `redux-persist` to avoid the loading delays `react` sometimes introduces (when user profiles take a second to be loaded in from redux causing additional DOM rendering after page refresh). Emails and user info are stored and accessed on MongoDB via `mongoose`. `redux` talks to the API routes and manages state, passing it along to the `react` frontend which is styled with React Bootstrap.
 
 ### How to run
 
