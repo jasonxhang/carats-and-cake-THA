@@ -10,3 +10,7 @@ This app is a simple email delivery service powered by SendGrid. Account creatio
 2. run `npm i`
 3. run `npm run start-dev` to boot the backend and frontend in development mode
 4. Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
+
+![Alt text](/public/ss-home.png?raw=true 'Home Page')
+
+![Alt text](/public/ss-new-email.png?raw=true 'New Email Page')
