@@ -15,9 +15,9 @@ class App extends Component {
         this.state = {};
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         console.log('loading initial data');
-        await this.props.loadInitialData();
+        this.props.loadInitialData();
         console.log('initial data loaded', this.props);
 
         if (this.props.isLoggedIn) {
@@ -50,6 +50,7 @@ const mapState = (state) => {
     return {
         isLoggedIn: !!state.user._id,
         emailsSent: state.user.emailsSent,
+        userId: state.user._id,
     };
 };
 

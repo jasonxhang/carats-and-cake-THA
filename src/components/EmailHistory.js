@@ -3,11 +3,11 @@ import {withRouter, Link} from 'react-router-dom';
 import {Spinner} from 'react-bootstrap';
 import NotFound from './NotFound';
 import {connect} from 'react-redux';
+import {fetchEmails} from '../store';
 
 import axios from 'axios';
 
-const EmailHistory = ({emailHistory}) => {
-    //Uncomment if we want email history to be handled directly in the component as opposed to redux
+const EmailHistory = ({emailHistory, emailsSent, loadEmails}) => {
     // const [emailHistory, setEmailHistory] = useState([]);
     // const [isLoading, setIsLoading] = useState(true);
     // const [isError, setIsError] = useState(false);
@@ -26,10 +26,10 @@ const EmailHistory = ({emailHistory}) => {
     //     setIsLoading(false);
     // };
 
-    // useEffect(() => {
-    //     const shouldGetEmails = !emailHistory.length;
-    //     shouldGetEmails && fetchEmailHistory();
-    // }, []);
+    useEffect(() => {
+        const shouldGetEmails = emailsSent;
+        shouldGetEmails && loadEmails();
+    }, []);
 
     const renderLoading = () => {
         return (
@@ -54,7 +54,7 @@ const EmailHistory = ({emailHistory}) => {
     };
 
     const renderEmailHistoryData = () => {
-        return emailHistory.length ? (
+        return emailsSent ? (
             <div className="page-container">
                 <div id="table-view">
                     <div className="table">
@@ -75,20 +75,30 @@ const EmailHistory = ({emailHistory}) => {
         );
     };
 
-    return (
-        <div>
-            {
-                // !emailHistory.length ? renderLoading() :
-                renderEmailHistoryData()
-            }
-        </div>
-    );
+    const renderPage = () => {
+        if (!emailHistory.length) {
+            renderLoading();
+        } else if (emailHistory.length) {
+            renderEmailHistoryData();
+        }
+    };
+
+    return <div>{!emailHistory.length ? renderLoading() : renderEmailHistoryData()}</div>;
 };
 
 const mapState = (state) => {
     return {
         emailHistory: state.email.emails,
+        emailsSent: state.user.emailsSent,
     };
 };
 
-export default withRouter(connect(mapState, null)(EmailHistory));
+const mapDispatch = (dispatch) => {
+    return {
+        loadEmails() {
+            dispatch(fetchEmails());
+        },
+    };
+};
+
+export default withRouter(connect(mapState, mapDispatch)(EmailHistory));

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import history from '../history';
+import fetchEmails from './email';
 
 /**
  * ACTION TYPES

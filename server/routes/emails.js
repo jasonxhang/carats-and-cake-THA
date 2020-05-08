@@ -36,8 +36,10 @@ router.post('/new', async (req, res, next) => {
 
 router.get('/emailHistory', async (req, res, next) => {
     try {
-        const allEmails = await Email.find({sender: req.user.email});
-        res.json(allEmails);
+        if (req.user) {
+            const allEmails = await Email.find({sender: req.user.email});
+            res.json(allEmails);
+        }
     } catch (error) {
         next(error);
     }

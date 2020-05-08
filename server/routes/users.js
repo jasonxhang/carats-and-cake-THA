@@ -18,8 +18,8 @@ router.post('/register_login', (req, res, next) => {
             if (err) {
                 return res.status(401).json('Wrong username and/or password');
             }
-
-            return res.status(200).json(user);
+            console.log('login -> req.user:', req.user);
+            return res.status(200).json(req.user);
         });
     })(req, res, next);
 });
@@ -28,6 +28,7 @@ router.post('/logout', (req, res, next) => {
     try {
         req.logout();
         req.session.destroy();
+        console.log('logout -> req.user:', req.user);
         res.redirect('/');
     } catch (error) {
         next(error);
@@ -36,6 +37,7 @@ router.post('/logout', (req, res, next) => {
 
 router.get('/me', async (req, res, next) => {
     try {
+        console.log('me -> req.user:', req.user);
         res.json(req.user);
     } catch (e) {
         res.send({message: 'Error in Fetching user'});

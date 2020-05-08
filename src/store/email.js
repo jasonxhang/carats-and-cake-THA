@@ -25,7 +25,9 @@ const getEmails = (emails) => ({
  */
 export const fetchEmails = () => async (dispatch) => {
     try {
+        console.log('fetch!');
         const {data} = await axios.get('/api/email/emailHistory');
+        console.log('data:', data);
         const action = getEmails(data);
         dispatch(action);
     } catch (e) {

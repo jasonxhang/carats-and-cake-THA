@@ -63447,9 +63447,9 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     this.state = {};
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     console.log('loading initial data');
-    await this.props.loadInitialData();
+    this.props.loadInitialData();
     console.log('initial data loaded', this.props);
 
     if (this.props.isLoggedIn) {
@@ -63474,7 +63474,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 const mapState = state => {
   return {
     isLoggedIn: !!state.user._id,
-    emailsSent: state.user.emailsSent
+    emailsSent: state.user.emailsSent,
+    userId: state.user._id
   };
 };
 
@@ -63514,8 +63515,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
 /* harmony import */ var _NotFound__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NotFound */ "./src/components/NotFound.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store */ "./src/store/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_6__);
+
 
 
 
@@ -63524,9 +63527,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const EmailHistory = ({
-  emailHistory
+  emailHistory,
+  emailsSent,
+  loadEmails
 }) => {
-  //Uncomment if we want email history to be handled directly in the component as opposed to redux
   // const [emailHistory, setEmailHistory] = useState([]);
   // const [isLoading, setIsLoading] = useState(true);
   // const [isError, setIsError] = useState(false);
@@ -63543,10 +63547,11 @@ const EmailHistory = ({
   //     }
   //     setIsLoading(false);
   // };
-  // useEffect(() => {
-  //     const shouldGetEmails = !emailHistory.length;
-  //     shouldGetEmails && fetchEmailHistory();
-  // }, []);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
+    const shouldGetEmails = emailsSent;
+    shouldGetEmails && loadEmails();
+  }, []);
+
   const renderLoading = () => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "loading"
@@ -63574,7 +63579,7 @@ const EmailHistory = ({
   };
 
   const renderEmailHistoryData = () => {
-    return emailHistory.length ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    return emailsSent ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "page-container"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "table-view"
@@ -63597,17 +63602,34 @@ const EmailHistory = ({
     }, renderEmailHistoryTable())))) : 'No email history data available. Go send some emails!';
   };
 
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, // !emailHistory.length ? renderLoading() :
-  renderEmailHistoryData());
+  const renderPage = () => {
+    if (!emailHistory.length) {
+      renderLoading();
+    } else if (emailHistory.length) {
+      renderEmailHistoryData();
+    }
+  };
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, !emailHistory.length ? renderLoading() : renderEmailHistoryData());
 };
 
 const mapState = state => {
   return {
-    emailHistory: state.email.emails
+    emailHistory: state.email.emails,
+    emailsSent: state.user.emailsSent
   };
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["connect"])(mapState, null)(EmailHistory)));
+const mapDispatch = dispatch => {
+  return {
+    loadEmails() {
+      dispatch(Object(_store__WEBPACK_IMPORTED_MODULE_5__["fetchEmails"])());
+    }
+
+  };
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["withRouter"])(Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["connect"])(mapState, mapDispatch)(EmailHistory)));
 
 /***/ }),
 
@@ -63681,7 +63703,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _containers_LoaderButton__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./containers/LoaderButton */ "./src/components/containers/LoaderButton.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../store */ "./src/store/index.js");
+/* harmony import */ var _history__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../history */ "./src/history.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -63763,7 +63787,8 @@ const mapState = state => {
 };
 
 const mapDispatch = {
-  auth: _store__WEBPACK_IMPORTED_MODULE_4__["auth"]
+  auth: _store__WEBPACK_IMPORTED_MODULE_4__["auth"],
+  fetchEmails: _store__WEBPACK_IMPORTED_MODULE_4__["fetchEmails"]
 };
 /* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["connect"])(mapState, mapDispatch)(Login));
 
@@ -64447,9 +64472,11 @@ const getEmails = emails => ({
 
 const fetchEmails = () => async dispatch => {
   try {
+    console.log('fetch!');
     const {
       data
     } = await axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/email/emailHistory');
+    console.log('data:', data);
     const action = getEmails(data);
     dispatch(action);
   } catch (e) {
@@ -64551,6 +64578,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _history__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../history */ "./src/history.js");
+/* harmony import */ var _email__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./email */ "./src/store/email.js");
+
 
 
 /**
