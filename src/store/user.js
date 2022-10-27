@@ -16,63 +16,65 @@ const defaultUser = {};
 /**
  * ACTION CREATORS
  */
-const getUser = (user) => ({type: GET_USER, user});
-const removeUser = () => ({type: REMOVE_USER});
+const getUser = (user) => ({ type: GET_USER, user });
+const removeUser = () => ({ type: REMOVE_USER });
 
 /**
  * THUNK CREATORS
  */
 export const me = () => async (dispatch, getState) => {
-    try {
-        const res = await axios.get('/api/user/me');
-        dispatch(getUser(res.data || defaultUser));
-    } catch (err) {
-        console.error(err);
-    }
+  try {
+    const res = await axios.get('/api/user/me');
+    dispatch(getUser(res.data || defaultUser));
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 export const auth = (email, password, signUpName, method) => async (dispatch) => {
-    let res;
-    try {
-        res = await axios.post(`/api/user/register_login`, {
-            email,
-            password,
-            signUpName,
-            method,
-        });
-    } catch (authError) {
-        return dispatch(getUser({error: authError}));
+  let res;
+  try {
+    res = await axios.post(`/api/user/register_login`, {
+      email,
+      password,
+      signUpName,
+      method,
+    });
+  } catch (authError) {
+    return dispatch(getUser({ error: authError }));
+  }
+  try {
+    console.log('res', res);
+    console.log('history', history);
+    if (res.data) {
+      dispatch(getUser(res.data));
+      history.push('/');
     }
-    try {
-        if (res.data) {
-            dispatch(getUser(res.data));
-            history.push('/');
-        }
-    } catch (dispatchOrHistoryErr) {
-        console.error(dispatchOrHistoryErr);
-    }
+  } catch (dispatchOrHistoryErr) {
+    console.error(dispatchOrHistoryErr);
+  }
 };
 
 export const logout = () => async (dispatch) => {
-    try {
-        await axios.post('/api/user/logout');
-        dispatch(removeUser());
-        history.push('/');
-    } catch (err) {
-        console.error(err);
-    }
+  try {
+    await axios.post('/api/user/logout');
+    dispatch(removeUser());
+    history.push('/');
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 /**
  * REDUCER
  */
 export default function (state = defaultUser, action) {
-    switch (action.type) {
-        case GET_USER:
-            return action.user;
-        case REMOVE_USER:
-            return defaultUser;
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case GET_USER:
+      return action.user;
+    case REMOVE_USER:
+      return defaultUser;
+    default:
+      return state;
+  }
 }

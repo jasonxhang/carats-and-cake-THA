@@ -1,20 +1,20 @@
-import React, { Component } from 'react'
-import { Form } from 'react-bootstrap'
-import LoaderButton from './containers/LoaderButton'
-import { connect } from 'react-redux'
-import { auth } from '../store'
+import React, { Component } from 'react';
+import { Form } from 'react-bootstrap';
+import LoaderButton from './containers/LoaderButton';
+import { connect } from 'react-redux';
+import { auth } from '../store';
 
 class Signup extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       isLoading: false,
       email: '',
       password: '',
       confirmPassword: '',
-      signUpName: ''
-    }
+      signUpName: '',
+    };
   }
 
   validateForm() {
@@ -22,39 +22,34 @@ class Signup extends Component {
       this.state.email.length > 0 &&
       this.state.password.length > 0 &&
       this.state.password === this.state.confirmPassword
-    )
+    );
   }
 
   validateConfirmationForm() {
-    return this.state.confirmationCode.length > 0
+    return this.state.confirmationCode.length > 0;
   }
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
-      [event.target.id]: event.target.value
-    })
-  }
+      [event.target.id]: event.target.value,
+    });
+  };
 
-  handleSubmit = event => {
-    event.preventDefault()
-    this.setState({ isLoading: true })
+  handleSubmit = (event) => {
+    event.preventDefault();
+    this.setState({ isLoading: true });
 
     try {
-      this.props.auth(
-        this.state.email,
-        this.state.password,
-        this.state.signUpName,
-        'signup'
-      )
+      this.props.auth(this.state.email, this.state.password, this.state.signUpName, 'signup');
     } catch (e) {
-      alert(e.message)
+      alert(e.message);
     }
 
-    this.setState({ isLoading: false })
-  }
+    this.setState({ isLoading: false });
+  };
 
   renderForm() {
-    const { error } = this.props
+    const { error } = this.props;
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -95,7 +90,6 @@ class Signup extends Component {
             />
           </Form.Group>
           <LoaderButton
-            block
             bssize="large"
             disabled={!this.validateForm()}
             type="submit"
@@ -104,25 +98,22 @@ class Signup extends Component {
             loadingText="Signing up…"
           />
         </form>
-        {error &&
-          error.response && (
-            <div id="error-response"> {error.response.data} </div>
-          )}
+        {error && error.response && <div id="error-response"> {error.response.data} </div>}
       </div>
-    )
+    );
   }
 
   render() {
-    return <div className="Signup">{this.renderForm()}</div>
+    return <div className="Signup">{this.renderForm()}</div>;
   }
 }
 
-const mapState = state => {
+const mapState = (state) => {
   return {
-    error: state.user.error
-  }
-}
+    error: state.user.error,
+  };
+};
 
-const mapDispatch = { auth }
+const mapDispatch = { auth };
 
-export default connect(mapState, mapDispatch)(Signup)
+export default connect(mapState, mapDispatch)(Signup);
