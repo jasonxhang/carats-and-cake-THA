@@ -1,7 +1,8 @@
 import React from 'react';
 import App from './App';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import history from './history';
 
 import configureStore from './store';
 
@@ -13,8 +14,8 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 
 root.render(
   <Provider store={store}>
-    <BrowserRouter history={history}>
+    <Router history={history}>
       <App />
-    </BrowserRouter>
+    </Router>
   </Provider>
 );
