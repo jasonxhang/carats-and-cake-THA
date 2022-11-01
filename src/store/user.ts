@@ -1,23 +1,28 @@
 import axios from 'axios';
 import history from '../history';
-import fetchEmails from './email';
+import { toastr } from 'react-redux-toastr';
 
 /**
  * ACTION TYPES
  */
 const GET_USER = 'GET_USER';
 const REMOVE_USER = 'REMOVE_USER';
+const ADD_ERROR = 'ADD_ERROR';
 
 /**
  * INITIAL STATE
  */
-const defaultUser = {};
+const defaultUser = {
+  user: {},
+  error: '',
+};
 
 /**
  * ACTION CREATORS
  */
-const getUser = (user) => ({ type: GET_USER, user });
+const setUser = (user) => ({ type: GET_USER, user });
 const removeUser = () => ({ type: REMOVE_USER });
+const addError = (error) => ({ type: ADD_ERROR, error });
 
 /**
  * THUNK CREATORS
@@ -25,7 +30,7 @@ const removeUser = () => ({ type: REMOVE_USER });
 export const me = () => async (dispatch, getState) => {
   try {
     const res = await axios.get('/api/user/me');
-    dispatch(getUser(res.data || defaultUser));
+    dispatch(setUser(res.data || defaultUser));
   } catch (err) {
     console.error(err);
   }
@@ -41,16 +46,16 @@ export const auth = (email, password, signUpName, method) => async (dispatch) =>
       method,
     });
   } catch (authError) {
-    return dispatch(getUser({ error: authError }));
+    toastr.error('', authError.response.data);
+    return dispatch(addError(authError.response.data));
   }
   try {
-    console.log('res', res);
-    console.log('history', history);
     if (res.data) {
-      dispatch(getUser(res.data));
+      dispatch(setUser(res.data));
       history.push('/');
     }
   } catch (dispatchOrHistoryErr) {
+    toastr.error('', dispatchOrHistoryErr);
     console.error(dispatchOrHistoryErr);
   }
 };
@@ -71,10 +76,19 @@ export const logout = () => async (dispatch) => {
 export default function (state = defaultUser, action) {
   switch (action.type) {
     case GET_USER:
-      return action.user;
+      return { ...state, user: action.user };
+    case ADD_ERROR:
+      return { ...state, error: action.error };
     case REMOVE_USER:
-      return defaultUser;
+      return { user: {}, error: '' };
     default:
       return state;
   }
 }
+
+/**
+ * SELECTORS
+ */
+export const getAuthError = (state) => state.user.error;
+export const getUser = (state) => state.user.user;
+export const getIsLoggedIn = (state) => state.user.user?._id;

@@ -1,9 +1,9 @@
 const localDefaultMongo = 'mongodb://localhost:27017/carats-and-cake-app';
 
-const config = {
+const configOptions = {
   mongoURL: process.env.ATLAS_URI || localDefaultMongo,
   redisAddr: 'redis://localhost:6379/0',
   port: process.env.PORT || 8000,
 };
 
-module.exports = config;
+module.exports = configOptions;

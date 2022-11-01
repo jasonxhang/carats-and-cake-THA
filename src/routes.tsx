@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { NotFound, Home, Login, Signup, EmailHistory, NewEmail } from './components';
+import { NotFound, Home, Login, Signup, AllAddresses, NewAddress } from './components';
 import { connect } from 'react-redux';
+import { getIsLoggedIn } from './store';
 
 interface RoutesProps {
   isLoggedIn: boolean;
@@ -16,8 +17,8 @@ const Routes = ({ isLoggedIn }: RoutesProps) => (
 
     {isLoggedIn && (
       <Switch>
-        <Route path="/emailHistory" component={EmailHistory} />
-        <Route path="/email" component={NewEmail} />
+        <Route path="/add-address" component={NewAddress} />
+        <Route path="/view-all" component={AllAddresses} />
       </Switch>
     )}
 
@@ -28,9 +29,8 @@ const Routes = ({ isLoggedIn }: RoutesProps) => (
 
 const mapState = (state) => {
   return {
-    // Being 'logged in' for our purposes will be defined has having a state.user that has a truthy id.
-    // Otherwise, state.user will be an empty object, and state.user.id will be falsey
-    isLoggedIn: !!state.user._id,
+    isLoggedIn: getIsLoggedIn(state),
   };
 };
+
 export default connect(mapState)(Routes);

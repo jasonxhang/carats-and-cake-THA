@@ -1,11 +1,10 @@
-const express = require('express');
 const router = require('express').Router();
 const passport = require('passport');
 
 router.post('/register_login', (req, res, next) => {
   passport.authenticate('local', function (err, user, info) {
     if (err) {
-      return res.status(400).json(info.message);
+      return res.status(400).json(err);
     }
 
     if (!user) {
@@ -21,14 +20,6 @@ router.post('/register_login', (req, res, next) => {
     });
   })(req, res, next);
 });
-
-// router.post(
-//   '/register_login',
-//   passport.authenticate('local', { failureRedirect: '/login', failureMessage: true }),
-//   function (req, res) {
-//     res.redirect('/');
-//   }
-// );
 
 router.post('/logout', (req, res, next) => {
   try {

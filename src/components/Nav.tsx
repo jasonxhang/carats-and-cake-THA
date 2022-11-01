@@ -2,11 +2,16 @@ import React, { Fragment } from 'react';
 import { withRouter, NavLink } from 'react-router-dom';
 import { Nav, Navbar } from 'react-bootstrap';
 
-const TopNav = ({ isLoggedIn, handleLogout, emailsSent }) => {
+interface TopNavProps {
+  isLoggedIn: boolean;
+  handleLogout: () => void;
+}
+
+const TopNav = ({ isLoggedIn, handleLogout }: TopNavProps) => {
   return (
     <div className="App container">
       <Navbar className="navbar" bg="light" variant="light">
-        <Navbar.Brand href="/">MERN LEX App</Navbar.Brand>
+        <Navbar.Brand>Billing Addresser</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
@@ -15,11 +20,11 @@ const TopNav = ({ isLoggedIn, handleLogout, emailsSent }) => {
             </NavLink>
             {isLoggedIn ? (
               <Fragment>
-                <NavLink className="nav-link" to="/email">
-                  New Email
+                <NavLink className="nav-link" to="/add-address">
+                  Add Address
                 </NavLink>
-                <NavLink className="nav-link" to="/emailHistory">
-                  Email History
+                <NavLink className="nav-link" to="/view-all">
+                  View Addresses
                 </NavLink>
                 <NavLink className="nav-link" to="/" onClick={handleLogout}>
                   Logout
@@ -36,17 +41,10 @@ const TopNav = ({ isLoggedIn, handleLogout, emailsSent }) => {
               </Fragment>
             )}
           </Nav>
-          {isLoggedIn && (
-            <div id="emailCounter">
-              <Navbar.Brand className="nav navbar-nav navbar-right">
-                Total Emails Sent: {emailsSent}
-              </Navbar.Brand>
-            </div>
-          )}
         </Navbar.Collapse>
       </Navbar>
     </div>
   );
 };
 
-export default withRouter(TopNav);
+export default TopNav;

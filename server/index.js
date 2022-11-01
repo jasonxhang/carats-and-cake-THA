@@ -1,6 +1,5 @@
 const config = require('./config');
 const express = require('express');
-const cors = require('cors');
 const morgan = require('morgan');
 const compression = require('compression');
 const mongoose = require('mongoose');
@@ -9,8 +8,6 @@ const path = require('path');
 const session = require('express-session');
 const passport = require('./passport');
 const MongoStore = require('connect-mongo')(session);
-
-const User = require('./models/user.model.js');
 
 require('dotenv').config();
 
@@ -57,7 +54,7 @@ const createApp = () => {
   // static file-serving middleware
   app.use(express.static(path.join(__dirname, '..', '/public')));
 
-  app.use('/api/email', require('./routes/emails'));
+  app.use('/api/addresses', require('./routes/addresses'));
   app.use('/api/user', require('./routes/users'));
 
   // any remaining requests with an extension (.js, .css, etc.) send 404
