@@ -36,6 +36,7 @@ router.get('/all-addresses', async (req, res, next) => {
   try {
     if (req.user) {
       const allAddresses = await Address.find({ user: req.user });
+      console.log('allAddresses:', allAddresses);
       res.json(allAddresses);
     }
   } catch (error) {
