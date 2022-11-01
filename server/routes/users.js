@@ -26,7 +26,6 @@ router.post('/logout', (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
     });
-    req.session.destroy();
     console.log('logout -> req.user:', req.user);
     res.redirect('/');
   } catch (error) {
