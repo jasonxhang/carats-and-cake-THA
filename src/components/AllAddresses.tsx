@@ -60,7 +60,7 @@ const AllAddresses = ({ allAddresses, loadAddresses, isLoading }: AllAddressesPr
       </div>
     ) : (
       <div className="center-pad-top">
-        <h3>No business addresses available. Go add some!</h3>
+        <h3>No billing addresses available. Go add some!</h3>
       </div>
     );
   };

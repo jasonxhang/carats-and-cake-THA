@@ -12,6 +12,7 @@
     "babel-loader": "^8.2.5",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
+    "concurrently": "^7.5.0",
     "connect-mongo": "^3.2.0",
     "connect-mongodb-session": "^3.1.1",
     "cors": "^2.8.5",
@@ -41,12 +42,11 @@
   "scripts": {
     "build-client": "webpack",
     "build-client-watch": "webpack -w",
-    "start": "node server",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-dev": "NODE_ENV='development' npm run build-client-watch & NODE_ENV='development' npm run start-server",
-    "start-server": "nodemon server -e html,js,scss --ignore public --ignore client"
+    "start-server": "nodemon server -e html,js,scss --ignore public --ignore client",
+    "start": "concurrently \"NODE_ENV='development' npm run build-client-watch\" \"NODE_ENV='development' npm run start-server\""
   },
   "browserslist": {
     "production": [
