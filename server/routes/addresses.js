@@ -11,15 +11,29 @@ const formatPhoneNumber = (unformatted) => {
 
 router.post('/new', async (req, res, next) => {
   try {
-    const { fullName, emailAddress, phoneNumber, streetAddress, city, state, postalCode } =
-      req.body.values;
+    const {
+      fullName,
+      emailAddress,
+      phoneNumber,
+      streetAddress,
+      streetAddress2,
+      city,
+      state,
+      postalCode,
+    } = req.body.values;
     const user = req.user;
+
+    let updatedStreetAddress = streetAddress;
+
+    if (streetAddress2) {
+      updatedStreetAddress = streetAddress.concat(' ', streetAddress2);
+    }
 
     const newAddress = await Address.create({
       fullName,
       emailAddress,
       phoneNumber: formatPhoneNumber(phoneNumber),
-      streetAddress,
+      streetAddress: updatedStreetAddress,
       city,
       state,
       postalCode,
@@ -36,7 +50,6 @@ router.get('/all-addresses', async (req, res, next) => {
   try {
     if (req.user) {
       const allAddresses = await Address.find({ user: req.user });
-      console.log('allAddresses:', allAddresses);
       res.json(allAddresses);
     }
   } catch (error) {

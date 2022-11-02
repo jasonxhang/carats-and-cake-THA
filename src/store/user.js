@@ -2,6 +2,9 @@ import axios from 'axios';
 import history from '../history';
 import { toastr } from 'react-redux-toastr';
 
+// for Jest
+export const dataAPI = axios.create();
+
 /**
  * ACTION TYPES
  */
@@ -27,7 +30,7 @@ const addError = (error) => ({ type: ADD_ERROR, error });
 /**
  * THUNK CREATORS
  */
-export const me = () => async (dispatch, getState) => {
+export const me = () => async (dispatch) => {
   try {
     const res = await axios.get('/api/user/me');
     dispatch(setUser(res.data || defaultUser));
@@ -36,29 +39,31 @@ export const me = () => async (dispatch, getState) => {
   }
 };
 
-export const auth = (email, password, signUpName, method) => async (dispatch) => {
-  let res;
-  try {
-    res = await axios.post(`/api/user/register_login`, {
-      email,
-      password,
-      signUpName,
-      method,
-    });
-  } catch (authError) {
-    toastr.error('', authError.response.data);
-    return dispatch(addError(authError.response.data));
-  }
-  try {
-    if (res.data) {
-      dispatch(setUser(res.data));
-      history.push('/');
+export const auth =
+  ({ email, password, signUpName, method }) =>
+  async (dispatch) => {
+    let res;
+    try {
+      res = await axios.post(`/api/user/register_login`, {
+        email,
+        password,
+        signUpName,
+        method,
+      });
+    } catch (authError) {
+      toastr.error('', authError.response.data);
+      return dispatch(addError(authError.response.data));
     }
-  } catch (dispatchOrHistoryErr) {
-    toastr.error('', dispatchOrHistoryErr);
-    console.error(dispatchOrHistoryErr);
-  }
-};
+    try {
+      if (res.data) {
+        dispatch(setUser(res.data));
+        history.push('/');
+      }
+    } catch (dispatchOrHistoryErr) {
+      toastr.error('', dispatchOrHistoryErr);
+      console.error(dispatchOrHistoryErr);
+    }
+  };
 
 export const logout = () => async (dispatch) => {
   try {

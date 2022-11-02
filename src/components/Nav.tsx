@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { withRouter, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Nav, Navbar } from 'react-bootstrap';
 
 interface TopNavProps {

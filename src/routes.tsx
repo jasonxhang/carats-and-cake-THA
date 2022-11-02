@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { NotFound, Home, Login, Signup, AllAddresses, NewAddress } from './components';
 import { connect } from 'react-redux';
-import { getIsLoggedIn } from './store';
+import { getIsLoggedIn, RootState } from './store';
 
 interface RoutesProps {
   isLoggedIn: boolean;
@@ -27,7 +27,7 @@ const Routes = ({ isLoggedIn }: RoutesProps) => (
   </Switch>
 );
 
-const mapState = (state) => {
+const mapState = (state: RootState) => {
   return {
     isLoggedIn: getIsLoggedIn(state),
   };

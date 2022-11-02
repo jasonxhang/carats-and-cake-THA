@@ -2,10 +2,17 @@ import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { LoaderButton } from './containers/LoaderButton';
 import { connect } from 'react-redux';
-import { auth, getAuthError } from '../store';
+import { auth, getAuthError, RootState, AppDispatch } from '../store';
+
+interface authDispatchProps {
+  email: string;
+  password: string;
+  signUpName: string;
+  method: 'login' | 'signup';
+}
 
 interface SignupProps {
-  signup: (email, password, signupName, method) => void;
+  signup: ({ email, password, signUpName, method }: authDispatchProps) => void;
   signupError: string;
 }
 
@@ -20,10 +27,10 @@ const Signup = ({ signup, signupError }: SignupProps) => {
     return email.length > 0 && password.length > 0 && password === confirmPassword;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    signup(email, password, signUpName, 'signup');
+    signup({ email, password, signUpName, method: 'signup' });
     setIsLoading(false);
   };
 
@@ -82,16 +89,16 @@ const Signup = ({ signup, signupError }: SignupProps) => {
   return <div className="Signup">{renderForm()}</div>;
 };
 
-const mapState = (state) => {
+const mapState = (state: RootState) => {
   return {
     signupError: getAuthError(state),
   };
 };
 
-const mapDispatch = (dispatch) => {
+const mapDispatch = (dispatch: AppDispatch) => {
   return {
-    signup: (email, password, signupName, method) =>
-      dispatch(auth(email, password, signupName, method)),
+    signup: ({ email, password, signUpName, method }: authDispatchProps) =>
+      dispatch(auth({ email, password, signUpName, method })),
   };
 };
 export default connect(mapState, mapDispatch)(Signup);

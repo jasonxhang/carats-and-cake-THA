@@ -1,7 +1,13 @@
 import React, { useEffect } from 'react';
 import { Spinner, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { fetchAddresses, getAllAddresses, getAddressesIsLoading } from '../store';
+import {
+  fetchAddresses,
+  getAllAddresses,
+  getAddressesIsLoading,
+  RootState,
+  AppDispatch,
+} from '../store';
 import { IAddress } from '../types/address';
 
 interface AllAddressesProps {
@@ -17,9 +23,9 @@ const AllAddresses = ({ allAddresses, loadAddresses, isLoading }: AllAddressesPr
 
   const renderLoading = () => {
     return (
-      <div className="loading">
+      <div data-testid="loading-message" className="loading">
         Loading...
-        <Spinner animation="border" variant="primary" />
+        <Spinner data-testid="spinner" animation="border" variant="primary" />
       </div>
     );
   };
@@ -59,7 +65,7 @@ const AllAddresses = ({ allAddresses, loadAddresses, isLoading }: AllAddressesPr
         </Table>
       </div>
     ) : (
-      <div className="center-pad-top">
+      <div data-testid="no-addresses-message" className="center-pad-top">
         <h3>No billing addresses available. Go add some!</h3>
       </div>
     );
@@ -68,17 +74,19 @@ const AllAddresses = ({ allAddresses, loadAddresses, isLoading }: AllAddressesPr
   return isLoading ? renderLoading() : renderAllAddresses();
 };
 
-const mapState = (state) => {
+const mapState = (state: RootState) => {
   return {
     allAddresses: getAllAddresses(state),
     isLoading: getAddressesIsLoading(state),
   };
 };
 
-const mapDispatch = (dispatch) => {
+const mapDispatch = (dispatch: AppDispatch) => {
   return {
     loadAddresses: () => dispatch(fetchAddresses()),
   };
 };
+
+export const AllAddressesForTest = AllAddresses;
 
 export default connect(mapState, mapDispatch)(AllAddresses);

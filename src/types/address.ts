@@ -3,6 +3,7 @@ export interface IAddress {
   emailAddress: string;
   phoneNumber: string;
   streetAddress: string;
+  streetAddress2?: string;
   city: string;
   state: string;
   postalCode: string;

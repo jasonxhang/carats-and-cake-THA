@@ -1,7 +1,7 @@
 import React from 'react';
 import { IUser } from '../types/user';
 import { connect } from 'react-redux';
-import { getUser } from '../store';
+import { getUser, RootState } from '../store';
 
 interface HomeProps {
   user: IUser;
@@ -31,7 +31,7 @@ const Home = ({ user }: HomeProps) => {
   );
 };
 
-const mapState = (state) => {
+const mapState = (state: RootState) => {
   return {
     user: getUser(state),
   };

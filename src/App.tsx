@@ -3,7 +3,7 @@ import ReduxToastr from 'react-redux-toastr';
 import history from './history';
 import Routes from './routes';
 import { connect } from 'react-redux';
-import { logout, me, fetchAddresses, getIsLoggedIn } from './store';
+import { logout, me, fetchAddresses, getIsLoggedIn, RootState, AppDispatch } from './store';
 import { TopNav } from './components';
 
 interface AppProps {
@@ -31,7 +31,6 @@ const App = ({ loadInitialData, loadAddresses, logoutUser, isLoggedIn }: AppProp
         newestOnTop={false}
         preventDuplicates
         position="top-center"
-        getState={(state) => state.toastr} // This is the default
         transitionIn="fadeIn"
         transitionOut="fadeOut"
         progressBar
@@ -43,13 +42,13 @@ const App = ({ loadInitialData, loadAddresses, logoutUser, isLoggedIn }: AppProp
   );
 };
 
-const mapState = (state) => {
+const mapState = (state: RootState) => {
   return {
     isLoggedIn: getIsLoggedIn(state),
   };
 };
 
-const mapDispatch = (dispatch) => {
+const mapDispatch = (dispatch: AppDispatch) => {
   return {
     logoutUser: () => dispatch(logout()),
     loadInitialData: () => dispatch(me()),
